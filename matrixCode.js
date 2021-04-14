@@ -1,21 +1,10 @@
 const mssql = require('mssql');
 const mysql = require('mysql');
+const config = require('./config');
 
-const configSIS = 
-{
-    user: 'usr_MPSAdmin',
-    password: 'MPS4Vion15',
-    server: 'NLBXTMPS02P',
-    database: 'SIS_VIOBOX'
-}
+const configSIS = config.configSISLive;
+const configGrafana = config.configGrafana;
 
-const configGrafana =
-{
-    host: '10.52.131.224',
-    user: 'artur',
-    password: 'viontd',
-    database: 'vion_kpi'
-}
 
 const sisHistoryPool = mssql.connect(configSIS);
 //const grafanaMySQL = mysql.createConnection(configGrafana);
@@ -36,7 +25,16 @@ sisHistoryPool
         return [datum, aantal]
     })
     .then(array=>{
-        console.log(array)
+        const date = new Date();
+
+        console.log(array[0] + 'data z query');
+        console.log(date.toYMD() + 'data z node');
+        
+        if(array[0] == date.toYMD()) console.log('Equal')
+        else console.log('Not equal')
+        
+        
+        /*console.log(array)
         let a = new Date().toLocaleDateString() 
         let b = array[0]
         function convert(stringdate) {
@@ -51,6 +49,6 @@ sisHistoryPool
             console.log(` is true`) 
         } else {
             console.log(` is false`)
-        }
+        }*/
     })
     .then(()=> mssql.close());

@@ -1,21 +1,9 @@
 const mssql = require('mssql');
 const mysql = require('mysql');
+const config = require('./config');
 
-const configSIS = 
-{
-    user: 'usr_MPSAdmin',
-    password: 'jqH9qn8Fq',
-    server: 'NLBXTMPS03P',
-    database: 'SIS_History'
-}
-
-const configGrafana =
-{
-    host: '10.52.131.224',
-    user: 'artur',
-    password: 'viontd',
-    database: 'vion_kpi'
-}
+const configSIS = config.configSISHistory;
+const configGrafana = config.configGrafana;
 
 const sisHistoryPool = mssql.connect(configSIS);
 const grafanaMySQL = mysql.createConnection(configGrafana);
