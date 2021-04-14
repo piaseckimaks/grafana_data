@@ -4,14 +4,13 @@ const log4js = require('log4js');
 const config = require('./config');
 
 const logsDate = new Date();
-
+const logsConfig =
+{
+    appenders: { fileAppender: {type: 'file', filename: `./logs/tarra/${logsDate.toYMD()}_tarra.log`}},
+    categories: { default: { appenders: ['fileAppender'], level: 'info' }}
+}
 //configure loging package
-log4js.configure(
-    {
-        appenders: { fileAppender: {type: 'file', filename: `./logs/tarra/${logsDate.toYMD()}_tarra.log`}},
-        categories: { default: { appenders: ['fileAppender'], level: 'info' }}
-    }
-)
+log4js.configure(logsConfig);
 //setting up a logger
 const logger = log4js.getLogger();
 
@@ -25,7 +24,7 @@ const grafanaMySQL = mysql.createConnection(configGrafana);
 
 sisHistoryPool
     .then( () => {
-        logger.info(`Connection with ${configSIS.database} at ${configSIS.server} is succesfull!`);
+        logger.info(`Connection with ${configSIS.database} at ${configSIS.server} is succesfull!`); 
 
         grafanaMySQL.connect(err=>
             {

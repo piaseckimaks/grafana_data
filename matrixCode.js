@@ -4,14 +4,13 @@ const config = require('./config');
 const log4js = require('log4js');
 
 const logsDate = new Date();
-
+const logsConfig =
+{
+    appenders: { fileAppender: {type: 'file', filename: `./logs/matrix_code/${logsDate.toYMD()}_matrixCode.log`}},
+    categories: { default: { appenders: ['fileAppender'], level: 'info' }}
+}
 //configure loging package
-log4js.configure(
-    {
-        appenders: { fileAppender: {type: 'file', filename: `./logs/matrix_code/${logsDate.toYMD()}_matrixCode.log`}},
-        categories: { default: { appenders: ['fileAppender'], level: 'info' }}
-    }
-)
+log4js.configure(logsConfig);
 //setting up a logger
 const logger = log4js.getLogger();
 
