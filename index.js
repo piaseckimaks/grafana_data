@@ -13,7 +13,8 @@ const configGrafana =
 {
     host: '10.52.131.224',
     user: 'artur',
-    password: 'viontd'
+    password: 'viontd',
+    database: 'vion_kpi'
 }
 
 const sisHistoryPool = mssql.connect(configSIS);
@@ -63,9 +64,13 @@ sisHistoryPool
         `
     ))
     .then(result =>
-    {
-        const queryData = result.recordset[0];
+    {   
+        console.log(`1 ${result}`)
+        console.log(`2 ${typeof result}`)
+        
 
+        const queryData = result.recordset[0];
+        console.log(`3 ${queryData}`)
         const date = queryData.date.toYMD();
 
         const percent = queryData['Procent of good REC'];
@@ -81,17 +86,54 @@ sisHistoryPool
         
 
         grafanaMySQL.query(
-            `INSERT INTO vion_kpi.Cbs_diff (Date, All_Rec, Percent, Diff, OK) VALUES ('${date}', ${queryData.ALL_REC}, ${percent} , ${diff} ,${queryData.ok});`, 
+            `INSERT INTO Cbs_diff (Date, All_Rec, Percent, Diff, OK) VALUES ('${date}', ${queryData.ALL_REC}, ${percent} , ${diff} ,${queryData.ok});`, 
             err =>
             {
                 if(err) throw err;
 
-                console.log('Insert succesfully made!');
+                console.log('Insert succesfully made to cbsDiff!');
             });
 
             //Here we close connection
-            grafanaMySQL.end();
+            
     })
+    .then( () => mssql.query(
+        `
+        --INSERT OPENQUERY (GRAFANA, 'SELECT date, totalDay, percent, mode, Scale FROM Grafana_Motion_Scales')
+        select DATEADD(day, -1, convert(date, GETDATE())) as 'dataTime',
+        COUNT(*) as 'totalDay',
+        cast(count(*) * 100.0 / sum(count(*)) over (PARTITION BY Scale) as Decimal(10,2)) as 'percent', 
+        mode as 'mode', 
+        Scale as 'Scale'
+        from [SIS_History].[dbo].[t_hist_Weight] with (nolock)
+        where Scale in (22, 26, 27, 48, 49)
+        and DATEDIFF(day, dtCreated, getdate()) = 1
+        group by mode, Scale
+        order by Scale, mode`
+    ))
+    .then(result =>
+        {
+            const queryDataRows = result.recordset;
+
+            queryDataRows.forEach(element => {
+                const date = element.dataTime.toYMD();
+                const totalDay = element.totalDay;
+                const percent = element.percent;
+                const mode = element.mode;
+                const Scale = element.Scale;
+
+                grafanaMySQL.query(
+                    `INSERT INTO Grafana_Motion_Scales (date, totalDay, percent, mode, Scale) VALUES ('${date}', ${totalDay}, ${percent} , ${mode} ,${Scale});`, 
+                    err =>
+                    {
+                        if(err) throw err;
+        
+                    });
+            });
+            console.log('Insert succesfully made to motionScales!')
+            grafanaMySQL.end();
+            
+        })
     .then(()=> mssql.close());
 
 
@@ -100,5 +142,5 @@ sisHistoryPool
 
 
 
-
+//
 
