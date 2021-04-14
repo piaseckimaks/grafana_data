@@ -1,0 +1,5 @@
+[2021-04-14T17:44:22.484] [INFO] default - Connection with SIS_History at undefined is succesfull!
+[2021-04-14T17:44:22.545] [INFO] default - Connected as id 8202 with MySQL at 10.52.131.224
+[2021-04-14T17:44:30.643] [INFO] default - Query in SIS_History succesfully executed!
+[2021-04-14T17:44:30.644] [INFO] default - Data from SIS_History query available
+[2021-04-14T17:44:30.654] [INFO] default - Insert succesfully made to tarraTable

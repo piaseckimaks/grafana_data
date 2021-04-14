@@ -15,6 +15,7 @@ log4js.configure(
 //setting up a logger
 const logger = log4js.getLogger();
 
+
 const configSIS = config.configSISHistory;
 const configGrafana = config.configGrafana;
 
@@ -24,11 +25,13 @@ const grafanaMySQL = mysql.createConnection(configGrafana);
 
 sisHistoryPool
     .then( () => {
+        logger.info(`Connection with ${configSIS.database} at ${configSIS.server} is succesfull!`);
+
         grafanaMySQL.connect(err=>
             {
-            if(err){ console.log(err); return;}
+            if(err){ logger.error(err); return;}
             
-            console.log('Connected as id ' + grafanaMySQL.threadId + ' with MySQL at ' + configGrafana.host);
+            logger.info('Connected as id ' + grafanaMySQL.threadId + ' with MySQL at ' + configGrafana.host);
         })
     })
     .then( () => mssql.query(
@@ -44,9 +47,12 @@ sisHistoryPool
     ))
     .then(result =>
     {   
-            //console.log(result)
-            //console.log(result.recordset)
+        logger.info('Query in SIS_History succesfully executed!');
+
         const queryDataRows = result.recordset;
+
+        if(queryDataRows.length > 0) logger.info('Data from SIS_History query available');
+
         const newArray = [];
         queryDataRows.map(element => {
             //console.log(element)
@@ -71,7 +77,8 @@ sisHistoryPool
                 });
         }); 
         console.log(newArray)
-        console.log('Insert succesfully made to tarraTable')  
+        logger.info('Insert succesfully made to tarraTable');
+
         grafanaMySQL.end();
         })
     .then(()=> mssql.close());
