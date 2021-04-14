@@ -1,6 +1,19 @@
 const mssql = require('mssql');
 const mysql = require('mysql');
+const log4js = require('log4js');
 const config = require('./config');
+
+const logsDate = new Date();
+
+//configure loging package
+log4js.configure(
+    {
+        appenders: { fileAppender: {type: 'file', filename: `./logs/tarra/${logsDate.toYMD()}_tarra.log`}},
+        categories: { default: { appenders: ['fileAppender'], level: 'info' }}
+    }
+)
+//setting up a logger
+const logger = log4js.getLogger();
 
 const configSIS = config.configSISHistory;
 const configGrafana = config.configGrafana;
@@ -13,10 +26,10 @@ sisHistoryPool
     .then( () => {
         grafanaMySQL.connect(err=>
             {
-                if(err){ console.log(err); return;}
+            if(err){ console.log(err); return;}
             
-                console.log('Connected as id ' + grafanaMySQL.threadId + ' with MySQL at ' + configGrafana.host);
-            })
+            console.log('Connected as id ' + grafanaMySQL.threadId + ' with MySQL at ' + configGrafana.host);
+        })
     })
     .then( () => mssql.query(
         `
@@ -27,7 +40,6 @@ sisHistoryPool
         and Scale in (22, 26, 27, 48, 49)
         order by ROW_NUMBER() OVER (PARTITION BY Scale ORDER BY ID), Scale
    
-
         `
     ))
     .then(result =>
