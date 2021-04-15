@@ -1,0 +1,59 @@
+[2021-04-15T17:26:02.471] [INFO] default - Query in SIS_Live executate succesfully
+[2021-04-15T17:26:59.508] [INFO] default - Querys executate succesfully
+[2021-04-15T17:27:45.603] [INFO] default - Querys executate succesfully
+[2021-04-15T17:28:59.355] [ERROR] default - ReferenceError: await is not defined
+    at D:\Web Development\Vion\grafana_data\matrixCode.js:32:12
+[2021-04-15T17:29:11.485] [ERROR] default - ReferenceError: await is not defined
+    at D:\Web Development\Vion\grafana_data\matrixCode.js:32:12
+[2021-04-15T17:52:45.135] [ERROR] default - RequestError: Invalid object name 'SIS_History.dbo.t_hist_ExportKarkasData'.
+    at handleError (D:\Web Development\Vion\grafana_data\node_modules\mssql\lib\tedious\request.js:374:15)
+    at Connection.emit (events.js:315:20)
+    at Parser.<anonymous> (D:\Web Development\Vion\grafana_data\node_modules\tedious\lib\connection.js:832:12)
+    at Parser.emit (events.js:315:20)
+    at Parser.<anonymous> (D:\Web Development\Vion\grafana_data\node_modules\tedious\lib\token\token-stream-parser.js:37:14)
+    at Parser.emit (events.js:315:20)
+    at addChunk (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_readable.js:298:12)
+    at readableAddChunk (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_readable.js:280:11)
+    at Parser.Readable.push (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_readable.js:241:10)
+    at Parser.Transform.push (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_transform.js:139:32) {
+  code: 'EREQUEST',
+  originalError: Error: Invalid object name 'SIS_History.dbo.t_hist_ExportKarkasData'.
+      at handleError (D:\Web Development\Vion\grafana_data\node_modules\mssql\lib\tedious\request.js:372:19)
+      at Connection.emit (events.js:315:20)
+      at Parser.<anonymous> (D:\Web Development\Vion\grafana_data\node_modules\tedious\lib\connection.js:832:12)
+      at Parser.emit (events.js:315:20)
+      at Parser.<anonymous> (D:\Web Development\Vion\grafana_data\node_modules\tedious\lib\token\token-stream-parser.js:37:14)
+      at Parser.emit (events.js:315:20)
+      at addChunk (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_readable.js:298:12)
+      at readableAddChunk (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_readable.js:280:11)
+      at Parser.Readable.push (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_readable.js:241:10)
+      at Parser.Transform.push (D:\Web Development\Vion\grafana_data\node_modules\tedious\node_modules\readable-stream\lib\_stream_transform.js:139:32) {
+    info: ErrorMessageToken {
+      name: 'ERROR',
+      event: 'errorMessage',
+      number: 208,
+      state: 1,
+      class: 16,
+      message: "Invalid object name 'SIS_History.dbo.t_hist_ExportKarkasData'.",
+      serverName: 'NLBXTMPS02P',
+      procName: '',
+      lineNumber: 12
+    }
+  },
+  number: 208,
+  lineNumber: 12,
+  state: 1,
+  class: 16,
+  serverName: 'NLBXTMPS02P',
+  procName: '',
+  precedingErrors: []
+}
+[2021-04-15T19:36:12.049] [ERROR] default - ReferenceError: sisHistoryPool is not defined
+    at D:\Web Development\Vion\grafana_data\matrixCode.js:32:30
+[2021-04-15T19:53:41.701] [INFO] default - Query in SIS_Live executed succesfully!
+[2021-04-15T19:53:42.398] [INFO] default - Query in SIS_History executed succesfully!
+[2021-04-15T19:53:56.468] [INFO] default - Query in SIS_Live executed succesfully!
+[2021-04-15T19:53:57.212] [INFO] default - Query in SIS_History executed succesfully!
+[2021-04-15T19:59:46.522] [INFO] default - Query in SIS_Live executed succesfully!
+[2021-04-15T19:59:47.310] [INFO] default - Query in SIS_History executed succesfully!
+[2021-04-15T19:59:47.310] [INFO] default - Data succesfully get from MSSQL!

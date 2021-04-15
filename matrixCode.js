@@ -2,6 +2,7 @@ const mssql = require('mssql');
 const mysql = require('mysql');
 const config = require('./config');
 const log4js = require('log4js');
+const querys = require('./querys');
 
 const logsDate = new Date();
 const logsConfig =
@@ -15,66 +16,52 @@ log4js.configure(logsConfig);
 const logger = log4js.getLogger();
 
 //getting config from main config module
-const configSIS = config.configSISLive;
+const configLiveSIS = config.configSISLive;
+const configHistSIS = config.configSISHistory;
 const configGrafana = config.configGrafana;
 
 
-const sisHistoryPool = mssql.connect(configSIS);
 //const grafanaMySQL = mysql.createConnection(configGrafana);
-let globalDAtum;
 
-//connection with SIS is handled as promise
-sisHistoryPool  
-    .then( 
-        () => mssql.query(
-            `select	DATEADD(day, -1, convert(date, GETDATE())) as date,
-            [Aantal]
-            FROM [SIS_VIOBOX].[dbo].[v_viobox_ExportAPSData]
-            where Matrix_karkas = 0 `
-        ),
-        //if connection fail then this function is called and log error into file /logs/matrix_code/[logsDate]_matrixCode.log
-        e => logger.error(e)
-    )
-    .then(result =>{
-        logger.info('Query in SIS_Live executate succesfully');
 
-        const queryDataRow = result.recordset[0];
-        const datum = queryDataRow.date.toYMD();
-        const aantal = queryDataRow.Aantal
-        //I changed array to the object so is more readeable later in the code
-        return { datum: datum, aatnal: aantal}
-        },
-        e => logger.error(e)
-    )
-    .then(data=>{
-        logger.info('Data from SIS_Live available!');
+(async function()
+    {
+        try
+        {
+            //querying data from Live
+            await mssql.connect(configLiveSIS);
+            const dataLive = await mssql.query(querys.matrixCodeLiveQuery);
+            if(typeof dataLive === 'object' && dataLive != null) logger.info('Query in SIS_Live executed succesfully!');
+            mssql.close();
 
-        const date = new Date();
+            //querying data from History
+            await mssql.connect(configHistSIS);
+            const dataHist = await mssql.query(querys.matrixCodeHistQuery);
+            if(typeof dataHist === 'object' && dataHist != null) logger.info('Query in SIS_History executed succesfully!');
+            mssql.close();
 
-        console.log(data.datum + 'data z query');
-        console.log(date.toYMD() + 'data z node');
-        
-        if(data.datum == date.toYMD()) console.log('Equal')
-        else console.log('Not equal')
-        
-        
-        /*console.log(array)
-        let a = new Date().toLocaleDateString() 
-        let b = array[0]
-        function convert(stringdate) {
-            stringdateB = stringdate.replace(/-/g, "/");
-            return b =stringdateB;
+            const numberWithoutMatrixLive = dataLive.recordset[0].Aantal;
+            const countTotaalHist = dataHist.recordset[0].Hist_CountTotalPerPrevDay;
+            const numberWithoutMatrixHist = dataHist.recordset[0].Hist_NumberOfKarkassWithouMatrixPrevDay;
+            const percentageOfCarcasWithoutMatrix = dataHist.recordset[0].Hist_PercentageOfCarcassWithoutMatrixCode;
+            const date = dataLive.recordset[0].date.toYMD();
+
+            //logs if data is valid
+            if(
+                numberWithoutMatrixLive != 'undefined' && 
+                countTotaalHist != 'undefined' && 
+                numberWithoutMatrixHist != 'undefined' && 
+                percentageOfCarcasWithoutMatrix != 'undefined' && 
+                date != 'undefined') logger.info('Data succesfully get from MSSQL!');
+
+            console.log(numberWithoutMatrixLive +' | '+ countTotaalHist +' | '+ numberWithoutMatrixHist + ' | ' + percentageOfCarcasWithoutMatrix + ' | ' + date);
+            
+
         }
-        convert(b)
-       // b.replace(/-/g,"/")
-        console.log(`${a} this is a`)
-        console.log(`${b} this is b`)
-        if (b == a) {
-            console.log(` is true`) 
-        } else {
-            console.log(` is false`)
-        }*/
-        },
-        e => logger.error(e)
-    )
-    .then(()=> mssql.close());
+        catch(err)
+        {
+            logger.error(err);
+        }
+        
+    }
+)()

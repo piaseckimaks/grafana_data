@@ -2,6 +2,7 @@ const mssql = require('mssql');
 const mysql = require('mysql');
 const log4js = require('log4js');
 const config = require('./config');
+const querys = require('./querys');
 
 const logsDate = new Date();
 const logsConfig =
@@ -33,17 +34,7 @@ sisHistoryPool
             logger.info('Connected as id ' + grafanaMySQL.threadId + ' with MySQL at ' + configGrafana.host);
         })
     })
-    .then( () => mssql.query(
-        `
-        select top(5) ID, Scale, Tarra, dtCreated
-        from [SIS_History].[dbo].[t_hist_Weight]
-        where dtCreated >= DATEADD(minute, -30, GETDATE())
-        and Mode = 3
-        and Scale in (22, 26, 27, 48, 49)
-        order by ROW_NUMBER() OVER (PARTITION BY Scale ORDER BY ID), Scale
-   
-        `
-    ))
+    .then( () => mssql.query(querys.tarraQuery))
     .then(result =>
     {   
         logger.info('Query in SIS_History succesfully executed!');
